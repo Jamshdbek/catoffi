@@ -36,7 +36,7 @@
   },
   "build": {
     "appId": "com.cat-offi.app",
-    "productName": "Cat Offi",
+    "productName": "CatOffi",
     "directories": {
       "output": "release"
     },

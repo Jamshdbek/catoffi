@@ -8,16 +8,20 @@ let mainWindow = null;
 let notificationWindow = null;
 let tray = null;
 
+const iconPath = path.join(__dirname, '../public/icon.png');
+
 function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 820,
+    title: 'CatOffi',
     minWidth: 980,
     minHeight: 680,
     show: false,
     backgroundColor: '#0a0a0a',
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     frame: process.platform !== 'darwin' ? false : true,
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       contextIsolation: true,
@@ -148,7 +152,7 @@ function createTray() {
         },
       },
     ]);
-    tray.setToolTip('Focus Timer');
+    tray.setToolTip('CatOffi');
     tray.setContextMenu(contextMenu);
   } catch (e) {
     // Tray may fail on Linux without proper icon - just skip
@@ -158,6 +162,9 @@ function createTray() {
 
 app.whenReady().then(() => {
   createMainWindow();
+  if (process.platform === 'darwin' && fs.existsSync(iconPath)) {
+    app.dock.setIcon(iconPath);
+  }
   if (process.platform !== 'darwin') {
     createTray();
   }

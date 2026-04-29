@@ -1,0 +1,270 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background: var(--scrollbar-thumb, rgba(128, 128, 128, 0.18));
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, rgba(128, 128, 128, 0.32));
+}
+
+button {
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  border: none;
+  outline: none;
+  background: none;
+  color: inherit;
+}
+
+input, select {
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  border: none;
+}
+
+/* Theme tokens — set via data-theme attribute on <html> */
+
+/* DARK (default) — monochrome / mono */
+:root,
+[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --bg-gradient: radial-gradient(ellipse at top, #161616 0%, #0a0a0a 60%);
+  --panel-bg: rgba(255, 255, 255, 0.055);
+  --panel-border: rgba(255, 255, 255, 0.09);
+  --card-bg: rgba(255, 255, 255, 0.04);
+  --card-border: rgba(255, 255, 255, 0.07);
+  --card-active-bg: rgba(255, 255, 255, 0.10);
+  --card-active-border: rgba(255, 255, 255, 0.22);
+  --text: #ffffff;
+  --text-sub: rgba(255, 255, 255, 0.42);
+  --text-muted: rgba(255, 255, 255, 0.22);
+  --tag-bg: rgba(255, 255, 255, 0.07);
+  --tag-text: rgba(255, 255, 255, 0.55);
+  --progress-bg: rgba(255, 255, 255, 0.08);
+  --progress-fill: rgba(255, 255, 255, 0.65);
+  --btn-bg: rgba(255, 255, 255, 0.07);
+  --btn-border: rgba(255, 255, 255, 0.10);
+  --btn-color: rgba(255, 255, 255, 0.55);
+  --play-bg: #ffffff;
+  --play-color: #000000;
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.09);
+  --divider: rgba(255, 255, 255, 0.07);
+  --ring-track: rgba(255, 255, 255, 0.10);
+  --ring-color: #ffffff;
+  --ring-end: #888888;
+  --dot-color: #000000;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
+}
+
+/* LIGHT */
+[data-theme="light"] {
+  --bg: #efefef;
+  --bg-gradient: radial-gradient(ellipse at top, #f8f8f8 0%, #e8e8e8 60%);
+  --panel-bg: rgba(255, 255, 255, 0.80);
+  --panel-border: rgba(0, 0, 0, 0.07);
+  --card-bg: rgba(0, 0, 0, 0.03);
+  --card-border: rgba(0, 0, 0, 0.06);
+  --card-active-bg: rgba(0, 0, 0, 0.07);
+  --card-active-border: rgba(0, 0, 0, 0.18);
+  --text: #0d0d0d;
+  --text-sub: rgba(0, 0, 0, 0.42);
+  --text-muted: rgba(0, 0, 0, 0.28);
+  --tag-bg: rgba(0, 0, 0, 0.055);
+  --tag-text: rgba(0, 0, 0, 0.55);
+  --progress-bg: rgba(0, 0, 0, 0.07);
+  --progress-fill: rgba(0, 0, 0, 0.7);
+  --btn-bg: rgba(0, 0, 0, 0.05);
+  --btn-border: rgba(0, 0, 0, 0.09);
+  --btn-color: rgba(0, 0, 0, 0.45);
+  --play-bg: #111111;
+  --play-color: #ffffff;
+  --input-bg: rgba(0, 0, 0, 0.04);
+  --input-border: rgba(0, 0, 0, 0.07);
+  --divider: rgba(0, 0, 0, 0.07);
+  --ring-track: rgba(0, 0, 0, 0.08);
+  --ring-color: #111111;
+  --ring-end: #555555;
+  --dot-color: #ffffff;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.32);
+}
+
+/* OCEAN — deep blue */
+[data-theme="ocean"] {
+  --bg: #0a1628;
+  --bg-gradient: radial-gradient(ellipse at top, #1e3a5f 0%, #0a1628 60%);
+  --panel-bg: rgba(96, 165, 250, 0.06);
+  --panel-border: rgba(96, 165, 250, 0.14);
+  --card-bg: rgba(96, 165, 250, 0.05);
+  --card-border: rgba(96, 165, 250, 0.10);
+  --card-active-bg: rgba(96, 165, 250, 0.15);
+  --card-active-border: rgba(96, 165, 250, 0.35);
+  --text: #e0f2fe;
+  --text-sub: rgba(186, 230, 253, 0.55);
+  --text-muted: rgba(186, 230, 253, 0.30);
+  --tag-bg: rgba(96, 165, 250, 0.10);
+  --tag-text: rgba(186, 230, 253, 0.65);
+  --progress-bg: rgba(96, 165, 250, 0.12);
+  --progress-fill: #60a5fa;
+  --btn-bg: rgba(96, 165, 250, 0.08);
+  --btn-border: rgba(96, 165, 250, 0.15);
+  --btn-color: rgba(186, 230, 253, 0.65);
+  --play-bg: #60a5fa;
+  --play-color: #0a1628;
+  --input-bg: rgba(96, 165, 250, 0.06);
+  --input-border: rgba(96, 165, 250, 0.12);
+  --divider: rgba(96, 165, 250, 0.10);
+  --ring-track: rgba(96, 165, 250, 0.15);
+  --ring-color: #60a5fa;
+  --ring-end: #93c5fd;
+  --dot-color: #0a1628;
+  --scrollbar-thumb: rgba(96, 165, 250, 0.25);
+  --scrollbar-thumb-hover: rgba(96, 165, 250, 0.45);
+}
+
+/* SUNSET — warm amber/rose */
+[data-theme="sunset"] {
+  --bg: #1a0f1a;
+  --bg-gradient: radial-gradient(ellipse at top, #3d1d2a 0%, #1a0f1a 60%);
+  --panel-bg: rgba(251, 146, 60, 0.05);
+  --panel-border: rgba(251, 146, 60, 0.14);
+  --card-bg: rgba(251, 146, 60, 0.04);
+  --card-border: rgba(251, 146, 60, 0.10);
+  --card-active-bg: rgba(251, 146, 60, 0.14);
+  --card-active-border: rgba(251, 146, 60, 0.35);
+  --text: #fef3c7;
+  --text-sub: rgba(254, 215, 170, 0.58);
+  --text-muted: rgba(254, 215, 170, 0.30);
+  --tag-bg: rgba(251, 146, 60, 0.10);
+  --tag-text: rgba(254, 215, 170, 0.70);
+  --progress-bg: rgba(251, 146, 60, 0.12);
+  --progress-fill: #fb923c;
+  --btn-bg: rgba(251, 146, 60, 0.08);
+  --btn-border: rgba(251, 146, 60, 0.15);
+  --btn-color: rgba(254, 215, 170, 0.65);
+  --play-bg: #fb923c;
+  --play-color: #1a0f1a;
+  --input-bg: rgba(251, 146, 60, 0.06);
+  --input-border: rgba(251, 146, 60, 0.12);
+  --divider: rgba(251, 146, 60, 0.10);
+  --ring-track: rgba(251, 146, 60, 0.15);
+  --ring-color: #fb923c;
+  --ring-end: #fbbf24;
+  --dot-color: #1a0f1a;
+  --scrollbar-thumb: rgba(251, 146, 60, 0.25);
+  --scrollbar-thumb-hover: rgba(251, 146, 60, 0.45);
+}
+
+/* FOREST — deep green */
+[data-theme="forest"] {
+  --bg: #0a1f14;
+  --bg-gradient: radial-gradient(ellipse at top, #1a3826 0%, #0a1f14 60%);
+  --panel-bg: rgba(52, 211, 153, 0.05);
+  --panel-border: rgba(52, 211, 153, 0.14);
+  --card-bg: rgba(52, 211, 153, 0.04);
+  --card-border: rgba(52, 211, 153, 0.10);
+  --card-active-bg: rgba(52, 211, 153, 0.14);
+  --card-active-border: rgba(52, 211, 153, 0.35);
+  --text: #d1fae5;
+  --text-sub: rgba(167, 243, 208, 0.55);
+  --text-muted: rgba(167, 243, 208, 0.28);
+  --tag-bg: rgba(52, 211, 153, 0.10);
+  --tag-text: rgba(167, 243, 208, 0.65);
+  --progress-bg: rgba(52, 211, 153, 0.12);
+  --progress-fill: #34d399;
+  --btn-bg: rgba(52, 211, 153, 0.08);
+  --btn-border: rgba(52, 211, 153, 0.15);
+  --btn-color: rgba(167, 243, 208, 0.62);
+  --play-bg: #34d399;
+  --play-color: #0a1f14;
+  --input-bg: rgba(52, 211, 153, 0.06);
+  --input-border: rgba(52, 211, 153, 0.12);
+  --divider: rgba(52, 211, 153, 0.10);
+  --ring-track: rgba(52, 211, 153, 0.15);
+  --ring-color: #34d399;
+  --ring-end: #6ee7b7;
+  --dot-color: #0a1f14;
+  --scrollbar-thumb: rgba(52, 211, 153, 0.25);
+  --scrollbar-thumb-hover: rgba(52, 211, 153, 0.45);
+}
+
+/* MIDNIGHT — deep violet */
+[data-theme="midnight"] {
+  --bg: #15102a;
+  --bg-gradient: radial-gradient(ellipse at top, #2a1f4d 0%, #15102a 60%);
+  --panel-bg: rgba(167, 139, 250, 0.06);
+  --panel-border: rgba(167, 139, 250, 0.14);
+  --card-bg: rgba(167, 139, 250, 0.04);
+  --card-border: rgba(167, 139, 250, 0.10);
+  --card-active-bg: rgba(167, 139, 250, 0.15);
+  --card-active-border: rgba(167, 139, 250, 0.38);
+  --text: #ede9fe;
+  --text-sub: rgba(196, 181, 253, 0.55);
+  --text-muted: rgba(196, 181, 253, 0.28);
+  --tag-bg: rgba(167, 139, 250, 0.10);
+  --tag-text: rgba(196, 181, 253, 0.65);
+  --progress-bg: rgba(167, 139, 250, 0.12);
+  --progress-fill: #a78bfa;
+  --btn-bg: rgba(167, 139, 250, 0.08);
+  --btn-border: rgba(167, 139, 250, 0.15);
+  --btn-color: rgba(196, 181, 253, 0.62);
+  --play-bg: #a78bfa;
+  --play-color: #15102a;
+  --input-bg: rgba(167, 139, 250, 0.06);
+  --input-border: rgba(167, 139, 250, 0.12);
+  --divider: rgba(167, 139, 250, 0.10);
+  --ring-track: rgba(167, 139, 250, 0.15);
+  --ring-color: #a78bfa;
+  --ring-end: #c4b5fd;
+  --dot-color: #15102a;
+  --scrollbar-thumb: rgba(167, 139, 250, 0.25);
+  --scrollbar-thumb-hover: rgba(167, 139, 250, 0.45);
+}
+
+/* Smooth theme transitions */
+body, * {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.35s;
+  transition-timing-function: ease-out;
+}
+
+/* Disable transitions on the timer text and ring animations */
+.no-theme-transition,
+.no-theme-transition * {
+  transition: none !important;
+}
+
+/* App container draggable area for macOS frameless */
+.drag-region {
+  -webkit-app-region: drag;
+}
+.no-drag {
+  -webkit-app-region: no-drag;
+}

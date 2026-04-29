@@ -11,6 +11,14 @@ export function ThemeProvider({ children }) {
     }
   })
 
+  const [bgImage, setBgImageState] = useState(() => {
+    try {
+      return localStorage.getItem('focus-timer-bg-image') || null
+    } catch {
+      return null
+    }
+  })
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     try {
@@ -18,10 +26,23 @@ export function ThemeProvider({ children }) {
     } catch {}
   }, [theme])
 
+  const setBgImage = (dataUrl) => {
+    setBgImageState(dataUrl)
+    try {
+      if (dataUrl) {
+        localStorage.setItem('focus-timer-bg-image', dataUrl)
+      } else {
+        localStorage.removeItem('focus-timer-bg-image')
+      }
+    } catch {
+      // localStorage may be full — still apply in-memory
+    }
+  }
+
   const isDark = theme !== 'light'
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, isDark }}>
+    <ThemeContext.Provider value={{ theme, setTheme, isDark, bgImage, setBgImage }}>
       {children}
     </ThemeContext.Provider>
   )

@@ -158,6 +158,9 @@ export default function TimerList({
                       fontSize: 13,
                       fontWeight: 600,
                       color: 'var(--text)',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
                     }}
                   >
                     {t.name}

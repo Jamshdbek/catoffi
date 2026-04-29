@@ -68,12 +68,14 @@ function createFullscreenNotification(payload) {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
 
+  const catW = 200;
+  const catH = 355;
+
   notificationWindow = new BrowserWindow({
-    width,
-    height,
-    x: 0,
-    y: 0,
-    fullscreen: true,
+    width: catW,
+    height: catH,
+    x: Math.round((width - catW) / 2),
+    y: height - catH,
     alwaysOnTop: true,
     frame: false,
     transparent: true,
@@ -81,6 +83,7 @@ function createFullscreenNotification(payload) {
     resizable: false,
     movable: false,
     show: false,
+    hasShadow: false,
     backgroundColor: '#00000000',
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
@@ -89,7 +92,6 @@ function createFullscreenNotification(payload) {
     },
   });
 
-  // Always-on-top across full screens (macOS too)
   notificationWindow.setAlwaysOnTop(true, 'screen-saver');
   notificationWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
 
@@ -109,8 +111,10 @@ function createFullscreenNotification(payload) {
   }
 
   notificationWindow.once('ready-to-show', () => {
-    notificationWindow.show();
-    notificationWindow.focus();
+    if (notificationWindow && !notificationWindow.isDestroyed()) {
+      notificationWindow.show();
+      notificationWindow.focus();
+    }
   });
 
   // Also fire a system notification

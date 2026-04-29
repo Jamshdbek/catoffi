@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ThemeProvider } from './contexts/ThemeContext'
+import { ThemeProvider, useTheme } from './contexts/ThemeContext'
 import Sidebar from './components/Sidebar'
 import TimerDisplay from './components/TimerDisplay'
 import TimerList from './components/TimerList'
@@ -8,6 +8,7 @@ import { PRESETS, INITIAL_TIMERS } from './utils/constants'
 import { useTimer } from './hooks/useTimer'
 
 function AppInner() {
+  const { bgImage } = useTheme()
   const [preset, setPreset] = useState(PRESETS[0])
   const [activeTimer, setActiveTimer] = useState(null)
   const [timers, setTimers] = useState(() => {
@@ -152,8 +153,13 @@ function AppInner() {
       style={{
         width: '100vw',
         height: '100vh',
-        background: 'var(--bg)',
-        backgroundImage: 'var(--bg-gradient)',
+        background: bgImage ? 'none' : 'var(--bg)',
+        backgroundImage: bgImage
+          ? `url(${bgImage})`
+          : 'var(--bg-gradient)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -171,6 +177,7 @@ function AppInner() {
           inset: 0,
           opacity: 0.02,
           pointerEvents: 'none',
+          backgroundSize:"cover",
           backgroundImage:
             'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'2\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
         }}

@@ -7,11 +7,7 @@
 - 🎯 **Pomodoro va boshqa rejimlar** — Pomodoro (25m), Short Break (5m), Long Break (15m), Deep Work (90m)
 - ⏱️ **Maxsus timerlar** — istalgan vaqt va tag bilan o'zingiznikini qo'shing
 - 🎨 **6 xil tema** — Mono Dark, Mono Light, Ocean, Sunset, Forest, Midnight
-- 🖱️ **Drag bilan o'zgartirish** — ring ustidagi nuqtani sudrab vaqtni qo'lda sozlang
 - 🔔 **Fullscreen notification** — vaqt tugaganda butun ekranni qoplaydigan animatsiyali xabar
-- 📊 **Bugungi statistika** — sessiyalar, fokus vaqti, kunlik streak
-- ⚡ **Animatsiyalar** — Framer Motion bilan jonli o'tishlar
-- 💾 **Avto-saqlash** — barcha ma'lumotlar localStorage da saqlanadi
 - ⌨️ **Klaviatura yorliqlari** — `Space` (start/pause), `R` (reset), `Ctrl/Cmd+N` (new timer)
 
 ## 🚀 O'rnatish
@@ -37,7 +33,7 @@ Bu komanda Vite dev server (`http://localhost:5173`) va Electron oynani birga is
 npm run electron:build:mac
 ```
 
-Natija: `release/` papkasida `.dmg` va `.zip` fayllari (x64 va arm64 uchun) bo'ladi.
+Source: `release/` papkasida `.dmg` va `.zip` fayllari (x64 va arm64 uchun) bo'ladi.
 
 ### Faqat Windows uchun
 
@@ -45,7 +41,7 @@ Natija: `release/` papkasida `.dmg` va `.zip` fayllari (x64 va arm64 uchun) bo'l
 npm run electron:build:win
 ```
 
-Natija: `release/` papkasida `.exe` (NSIS installer va portable) fayllar bo'ladi.
+Source: `release/` papkasida `.exe` (NSIS installer va portable) fayllar bo'ladi.
 
 ### Ikkala platforma uchun birga (faqat Mac yoki Linuxda ishlaydi)
 
@@ -119,6 +115,3 @@ timer-app/
 
 Birinchi marta ishga tushirishda Windows da SmartScreen ogohlantirish berishi mumkin (sertifikat yo'qligi sababli). macOS da Gatekeeper "verifikatsiya qilinmagan dasturchi" deyishi mumkin — System Settings > Privacy & Security > "Open Anyway" orqali ochish mumkin.
 
-## 📄 Litsenziya
-
-MIT

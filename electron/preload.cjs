@@ -37,4 +37,27 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   floatingTimerToggle: () => ipcRenderer.send('floating-timer-toggle'),
   floatingTimerClose: () => ipcRenderer.send('floating-timer-close'),
+
+  // Auto-updater
+  onUpdateAvailable: (cb) => {
+    const h = (_e, info) => cb(info);
+    ipcRenderer.on('update-available', h);
+    return () => ipcRenderer.removeListener('update-available', h);
+  },
+  onUpdateDownloadProgress: (cb) => {
+    const h = (_e, progress) => cb(progress);
+    ipcRenderer.on('update-download-progress', h);
+    return () => ipcRenderer.removeListener('update-download-progress', h);
+  },
+  onUpdateDownloaded: (cb) => {
+    const h = (_e, info) => cb(info);
+    ipcRenderer.on('update-downloaded', h);
+    return () => ipcRenderer.removeListener('update-downloaded', h);
+  },
+  onUpdateError: (cb) => {
+    const h = (_e, msg) => cb(msg);
+    ipcRenderer.on('update-error', h);
+    return () => ipcRenderer.removeListener('update-error', h);
+  },
+  installUpdate: () => ipcRenderer.send('install-update'),
 });

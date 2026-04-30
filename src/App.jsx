@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ThemeProvider, useTheme } from './contexts/ThemeContext'
+import UpdateBanner from './components/UpdateBanner'
 import Sidebar from './components/Sidebar'
 import TimerDisplay from './components/TimerDisplay'
 import TimerList from './components/TimerList'
@@ -255,17 +256,14 @@ function AppInner() {
   }, [timer, showModal, showStepModal])
 
   return (
+    <>
+    <UpdateBanner />
     <div
       style={{
-        width: '100vw',
+        width: '100%',
         height: '100vh',
-        background: bgImage ? 'none' : 'var(--bg)',
-        backgroundImage: bgImage
-          ? `url(${bgImage})`
-          : 'var(--bg-gradient)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        background: 'var(--bg)',
+        backgroundImage: bgImage ? 'none' : 'var(--bg-gradient)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -276,6 +274,22 @@ function AppInner() {
       }}
       className="drag-region"
     >
+      {bgImage && (
+        <img
+          src={bgImage}
+          alt=""
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            objectPosition: 'center',
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        />
+      )}
       <div
         style={{
           position: 'absolute',
@@ -356,6 +370,7 @@ function AppInner() {
         onToggleFloatingTimer={() => setFloatingTimerEnabled((v) => !v)}
       />
     </div>
+    </>
   )
 }
 

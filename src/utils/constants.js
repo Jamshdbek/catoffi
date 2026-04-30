@@ -9,9 +9,6 @@ export const INITIAL_TIMERS = [
   { id: 1, name: 'Morning Focus',  duration: 45 * 60, tag: 'Work' },
   { id: 2, name: 'Read Book',      duration: 30 * 60, tag: 'Personal' },
   { id: 3, name: 'Workout',        duration: 60 * 60, tag: 'Health' },
-  { id: 4, name: 'Meditation',     duration: 10 * 60, tag: 'Mindful' },
-  { id: 5, name: 'Language Study', duration: 20 * 60, tag: 'Learning' },
-  { id: 6, name: 'Evening Walk',   duration: 40 * 60, tag: 'Health' },
 ]
 
 export const TAGS = ['Work', 'Personal', 'Health', 'Mindful', 'Learning', 'Other']

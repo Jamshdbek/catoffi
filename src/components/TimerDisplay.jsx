@@ -14,6 +14,7 @@ export default function TimerDisplay({
 }) {
   const pct = total > 0 ? Math.round((remaining / total) * 100) : 100
   const status = running ? 'Running' : remaining === total ? 'Ready' : (remaining === 0 ? 'Done' : 'Paused')
+  // const { bgImage } = useTheme()
 
   return (
     <div
@@ -33,7 +34,7 @@ export default function TimerDisplay({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        style={{ textAlign: 'center' }}
+        style={{ textAlign: 'center'}}
       >
         <AnimatePresence mode="wait">
           <motion.p
@@ -146,19 +147,6 @@ export default function TimerDisplay({
           }}
           aria-label="Reset timer"
         >
-          {/* <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="1 4 1 10 7 10" />
-            <path d="M3.51 15a9 9 0 1 0 .49-4" />
-          </svg> */}
           <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M21 3L15.6 3C15.2686 3 15 3.26863 15 3.6V3.6L15 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             <path d="M15.5 3.5C18.7983 4.80851 21 8.29825 21 12C21 16.8715 16.9706 21 12 21C7.02944 21 3 16.8715 3 12C3 8.73514 4.80989 5.52512 7.5 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />

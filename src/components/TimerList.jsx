@@ -121,7 +121,7 @@ export default function TimerList({
                     ? 'var(--card-active-border)'
                     : 'var(--card-border)'
                     }`,
-                  borderRadius: 13,
+                  borderRadius: 16,
                   padding: '11px 13px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -536,7 +536,7 @@ export default function TimerList({
           left: 0,
           right: 0,
           bottom: 0,
-          borderRadius: 5,
+          borderRadius: 22,
           background: 'var(--card-bg)',
           boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
           zIndex: -1,

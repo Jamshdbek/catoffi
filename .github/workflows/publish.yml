@@ -1,0 +1,54 @@
+name: CatOffi 
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers when you push a tag like v1.0.0, v2.0.1, etc.
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+permissions:
+  contents: write  # Required to create releases and upload assets
+
+jobs:
+  publish-mac:
+    runs-on: macos-latest  # Using macOS to build for Mac
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'  # Change to your Node version
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci  # Use npm ci for faster, reliable installs
+      
+      - name: Build and publish for Mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this
+        run: npm run electron:publish:mac
+
+  # Optional: Build for Windows and Linux too
+  publish-windows-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build and publish for Windows and Linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run electron:publish  # Adjust this to your publish command

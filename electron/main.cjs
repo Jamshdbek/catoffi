@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, Notification, screen, Tray, Menu, nativeImage } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
 
@@ -220,6 +221,11 @@ app.whenReady().then(() => {
     createTray();
   }
 
+  if (!isDev) {
+    // Check for updates 5 seconds after launch so the window is ready
+    setTimeout(() => autoUpdater.checkForUpdates(), 5000);
+  }
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createMainWindow();
@@ -227,6 +233,26 @@ app.whenReady().then(() => {
       mainWindow.show();
     }
   });
+});
+
+autoUpdater.on('update-available', (info) => {
+  mainWindow?.webContents.send('update-available', info);
+});
+
+autoUpdater.on('download-progress', (progress) => {
+  mainWindow?.webContents.send('update-download-progress', progress);
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  mainWindow?.webContents.send('update-downloaded', info);
+});
+
+autoUpdater.on('error', (err) => {
+  mainWindow?.webContents.send('update-error', err?.message ?? 'Unknown error');
+});
+
+ipcMain.on('install-update', () => {
+  autoUpdater.quitAndInstall();
 });
 
 app.on('window-all-closed', () => {

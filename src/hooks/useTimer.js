@@ -97,6 +97,18 @@ export function useTimer({ initialDuration = 25 * 60, onComplete } = {}) {
     setRemaining(clamped)
   }, [running, duration])
 
+  /**
+   * Set a new duration and immediately start the timer.
+   * Used by step sequence to auto-advance to the next step.
+   */
+  const startWithDuration = useCallback((newDuration) => {
+    const d = Math.max(1, Math.round(newDuration))
+    setDuration(d)
+    setRemaining(d)
+    endTimestampRef.current = Date.now() + d * 1000
+    setRunning(true)
+  }, [])
+
   return {
     duration,
     remaining,
@@ -109,5 +121,6 @@ export function useTimer({ initialDuration = 25 * 60, onComplete } = {}) {
     skip,
     setDuration: setNewDuration,
     setRemainingManual,
+    startWithDuration,
   }
 }

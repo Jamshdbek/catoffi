@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { ThemeProvider, useTheme } from './contexts/ThemeContext'
 import Sidebar from './components/Sidebar'
 import TimerDisplay from './components/TimerDisplay'
 import TimerList from './components/TimerList'
 import AddTimerModal from './components/AddTimerModal'
+import ServiceModal from './components/ServiceModal'
 import { PRESETS, INITIAL_TIMERS } from './utils/constants'
 import { useTimer } from './hooks/useTimer'
 
@@ -20,6 +21,23 @@ function AppInner() {
     }
   })
   const [showModal, setShowModal] = useState(false)
+  const [showServiceModal, setShowServiceModal] = useState(false)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('focus-notifications') ?? 'true') } catch { return true }
+  })
+  const [floatingTimerEnabled, setFloatingTimerEnabled] = useState(false)
+
+  // Step sequence state
+  const [stepSteps, setStepSteps] = useState(() => {
+    try {
+      const saved = localStorage.getItem('focus-timer-step-seq')
+      return saved ? JSON.parse(saved) : []
+    } catch { return [] }
+  })
+  const [stepIndex, setStepIndex] = useState(0)
+  const [stepLoop, setStepLoop] = useState(false)
+  const [stepActive, setStepActive] = useState(false)
+  const [showStepModal, setShowStepModal] = useState(false)
 
   const [stats, setStats] = useState(() => {
     try {
@@ -32,7 +50,6 @@ function AppInner() {
     }
   })
 
-  // Persist
   useEffect(() => {
     try {
       localStorage.setItem('focus-timer-timers', JSON.stringify(timers))
@@ -41,18 +58,26 @@ function AppInner() {
 
   useEffect(() => {
     try {
+      localStorage.setItem('focus-timer-step-seq', JSON.stringify(stepSteps))
+    } catch {}
+  }, [stepSteps])
+
+  useEffect(() => {
+    try {
       localStorage.setItem('focus-timer-stats', JSON.stringify(stats))
     } catch {}
   }, [stats])
 
-  // Get active title and duration
-  const activeTimerObj = timers.find((t) => t.id === activeTimer)
-  const currentTitle = activeTimerObj ? activeTimerObj.name : preset.label
-  const currentDuration = activeTimerObj ? activeTimerObj.duration : preset.duration
+  // Derive active values (step mode takes priority over regular timer)
+  const activeTimerObj = !stepActive ? timers.find((t) => t.id === activeTimer) : null
+  const currentStepObj = stepActive ? (stepSteps[stepIndex] ?? null) : null
+  const currentTitle = currentStepObj?.name ?? activeTimerObj?.name ?? preset.label
+  const currentDuration = currentStepObj?.duration ?? activeTimerObj?.duration ?? preset.duration
 
-  // Timer hook
+  // Ref so handleComplete can call timer.startWithDuration (timer defined below)
+  const timerRef = useRef(null)
+
   const handleComplete = useCallback(() => {
-    // Update stats
     setStats((s) => {
       const today = new Date().toDateString()
       const newStreak = s.lastDate === today ? s.streak : s.streak + 1
@@ -64,15 +89,13 @@ function AppInner() {
       }
     })
 
-    // Trigger notification
     if (window.electronAPI) {
       window.electronAPI.timerFinished({
         name: currentTitle,
-        type: activeTimerObj ? activeTimerObj.tag : 'Focus',
+        type: currentStepObj?.tag ?? activeTimerObj?.tag ?? 'Focus',
         duration: currentDuration,
       })
-    } else {
-      // Browser fallback
+    } else if (notificationsEnabled) {
       if ('Notification' in window) {
         if (Notification.permission === 'granted') {
           new Notification(`⏰ ${currentTitle}`, {
@@ -83,29 +106,48 @@ function AppInner() {
         }
       }
     }
-  }, [currentTitle, currentDuration, activeTimerObj])
+
+    // Advance step sequence
+    if (stepActive) {
+      const nextIdx = stepIndex + 1
+      if (nextIdx < stepSteps.length) {
+        setStepIndex(nextIdx)
+        timerRef.current?.startWithDuration(stepSteps[nextIdx].duration)
+      } else if (stepLoop) {
+        setStepIndex(0)
+        timerRef.current?.startWithDuration(stepSteps[0].duration)
+      } else {
+        setStepActive(false)
+        setStepIndex(0)
+      }
+    }
+  }, [currentTitle, currentDuration, activeTimerObj, currentStepObj, stepActive, stepIndex, stepSteps, stepLoop, notificationsEnabled])
 
   const timer = useTimer({
     initialDuration: PRESETS[0].duration,
     onComplete: handleComplete,
   })
 
-  // Sync timer duration when preset/active timer changes
+  // Keep ref current so handleComplete can call timer methods
+  timerRef.current = timer
+
+  // Sync timer duration on preset/timer change — skipped while step sequence is running
   useEffect(() => {
-    timer.setDuration(currentDuration)
+    if (!stepActive) {
+      timer.setDuration(currentDuration)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDuration])
 
-  const handleSelectPreset = useCallback(
-    (p) => {
-      setPreset(p)
-      setActiveTimer(null)
-    },
-    []
-  )
+  const handleSelectPreset = useCallback((p) => {
+    setPreset(p)
+    setActiveTimer(null)
+  }, [])
 
   const handleSelectTimer = useCallback((t) => {
     setActiveTimer(t.id)
+    setStepActive(false)
+    setStepIndex(0)
   }, [])
 
   const handleDeleteTimer = useCallback(
@@ -122,11 +164,75 @@ function AppInner() {
     setTimers((ts) => [...ts, t])
   }, [])
 
+  // Step sequence handlers
+  const handleAddStep = useCallback((step) => {
+    setStepSteps((ss) => [...ss, step])
+  }, [])
+
+  const handleDeleteStep = useCallback((id) => {
+    setStepSteps((ss) => {
+      const next = ss.filter((s) => s.id !== id)
+      if (next.length === 0) setStepActive(false)
+      return next
+    })
+  }, [])
+
+  const handleStartSequence = useCallback(() => {
+    if (stepSteps.length === 0) return
+    setActiveTimer(null)
+    setStepActive(true)
+    setStepIndex(0)
+    timerRef.current?.startWithDuration(stepSteps[0].duration)
+  }, [stepSteps])
+
+  const handleStopSequence = useCallback(() => {
+    setStepActive(false)
+    setStepIndex(0)
+    timerRef.current?.pause()
+  }, [])
+
+  const handleToggleStepLoop = useCallback(() => {
+    setStepLoop((v) => !v)
+  }, [])
+
+  // Electron: show/hide native floating window when toggle changes
+  useEffect(() => {
+    if (!window.electronAPI) return
+    if (floatingTimerEnabled) {
+      window.electronAPI.showFloatingTimer()
+    } else {
+      window.electronAPI.hideFloatingTimer()
+    }
+  }, [floatingTimerEnabled])
+
+  // Electron: push timer state to floating window on every tick
+  useEffect(() => {
+    if (!window.electronAPI || !floatingTimerEnabled) return
+    window.electronAPI.updateFloatingTimer({
+      remaining: timer.remaining,
+      running: timer.running,
+      title: currentTitle,
+    })
+  }, [timer.remaining, timer.running, currentTitle, floatingTimerEnabled])
+
+  // Electron: listen for play/pause requests from floating window
+  useEffect(() => {
+    if (!window.electronAPI) return
+    const cleanup = window.electronAPI.onFloatingTimerToggleRequest(() => timer.toggle())
+    return cleanup
+  }, [timer.toggle])
+
+  // Electron: floating window closed by its own X button → sync state
+  useEffect(() => {
+    if (!window.electronAPI) return
+    const cleanup = window.electronAPI.onFloatingTimerClosed(() => setFloatingTimerEnabled(false))
+    return cleanup
+  }, [])
+
   // Keyboard shortcuts
   useEffect(() => {
     const handler = (e) => {
-      if (showModal) return
-      // Don't trigger when typing in inputs
+      if (showModal || showStepModal) return
       if (
         e.target.tagName === 'INPUT' ||
         e.target.tagName === 'SELECT' ||
@@ -146,7 +252,7 @@ function AppInner() {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [timer, showModal])
+  }, [timer, showModal, showStepModal])
 
   return (
     <div
@@ -170,14 +276,13 @@ function AppInner() {
       }}
       className="drag-region"
     >
-      {/* Subtle grain texture overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           opacity: 0.02,
           pointerEvents: 'none',
-          backgroundSize:"cover",
+          backgroundSize: 'cover',
           backgroundImage:
             'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'2\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
         }}
@@ -189,6 +294,7 @@ function AppInner() {
           activeTimerId={activeTimer}
           onSelectPreset={handleSelectPreset}
           stats={stats}
+          onOpenServices={() => setShowServiceModal(true)}
         />
 
         <TimerDisplay
@@ -211,6 +317,15 @@ function AppInner() {
           onSelect={handleSelectTimer}
           onDelete={handleDeleteTimer}
           onAdd={() => setShowModal(true)}
+          stepSteps={stepSteps}
+          stepIndex={stepIndex}
+          stepActive={stepActive}
+          stepLoop={stepLoop}
+          onAddStep={() => setShowStepModal(true)}
+          onDeleteStep={handleDeleteStep}
+          onStartSequence={handleStartSequence}
+          onStopSequence={handleStopSequence}
+          onToggleStepLoop={handleToggleStepLoop}
         />
       </div>
 
@@ -218,6 +333,27 @@ function AppInner() {
         open={showModal}
         onAdd={handleAddTimer}
         onClose={() => setShowModal(false)}
+      />
+      <AddTimerModal
+        open={showStepModal}
+        onAdd={handleAddStep}
+        onClose={() => setShowStepModal(false)}
+        title="New Step"
+        submitLabel="Add Step"
+      />
+      <ServiceModal
+        open={showServiceModal}
+        onClose={() => setShowServiceModal(false)}
+        notificationsEnabled={notificationsEnabled}
+        onToggleNotifications={() => {
+          setNotificationsEnabled((v) => {
+            const next = !v
+            try { localStorage.setItem('focus-notifications', JSON.stringify(next)) } catch {}
+            return next
+          })
+        }}
+        floatingTimerEnabled={floatingTimerEnabled}
+        onToggleFloatingTimer={() => setFloatingTimerEnabled((v) => !v)}
       />
     </div>
   )

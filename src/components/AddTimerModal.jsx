@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TAGS } from '../utils/constants'
 
-export default function AddTimerModal({ open, onAdd, onClose }) {
+export default function AddTimerModal({ open, onAdd, onClose, title = 'New Timer', submitLabel = 'Add Timer' }) {
   const [name, setName] = useState('')
   const [digits, setDigits] = useState([0, 0, 0, 0]) // [m1, m2, s1, s2]
   const [tag, setTag] = useState('Work')
@@ -132,7 +132,7 @@ export default function AddTimerModal({ open, onAdd, onClose }) {
                   letterSpacing: '-0.3px',
                 }}
               >
-                New Timer
+                {title}
               </p>
               <motion.button
                 whileHover={{ scale: 1.08 }}
@@ -244,7 +244,7 @@ export default function AddTimerModal({ open, onAdd, onClose }) {
                 marginTop: 4,
               }}
             >
-              Add Timer
+              {submitLabel}
             </motion.button>
           </motion.div>
         </motion.div>

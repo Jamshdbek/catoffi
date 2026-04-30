@@ -6,6 +6,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow = null;
 let notificationWindow = null;
+let floatingWindow = null;
 let tray = null;
 
 const iconPath = path.join(__dirname, '../public/icon.png');
@@ -132,6 +133,52 @@ function createFullscreenNotification(payload) {
   });
 }
 
+function createFloatingWindow() {
+  if (floatingWindow && !floatingWindow.isDestroyed()) {
+    floatingWindow.show();
+    return;
+  }
+
+  const { width } = screen.getPrimaryDisplay().workAreaSize;
+
+  floatingWindow = new BrowserWindow({
+    width: 200,
+    height: 66,
+    x: width - 220,
+    y: 20,
+    alwaysOnTop: true,
+    frame: false,
+    transparent: true,
+    skipTaskbar: true,
+    resizable: false,
+    hasShadow: false,
+    backgroundColor: '#00000000',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.cjs'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+
+  floatingWindow.setAlwaysOnTop(true, 'floating');
+  floatingWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: false });
+
+  if (isDev) {
+    floatingWindow.loadURL('http://localhost:5173/?floating=1');
+  } else {
+    floatingWindow.loadFile(path.join(__dirname, '../dist/index.html'), {
+      search: 'floating=1',
+    });
+  }
+
+  floatingWindow.on('closed', () => {
+    floatingWindow = null;
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('floating-timer-closed');
+    }
+  });
+}
+
 function createTray() {
   // Create a transparent icon to avoid file dependency
   const icon = nativeImage.createEmpty();
@@ -232,3 +279,36 @@ ipcMain.on('window-control', (event, action) => {
 });
 
 ipcMain.handle('get-platform', () => process.platform);
+
+ipcMain.on('floating-timer-show', () => {
+  createFloatingWindow();
+});
+
+ipcMain.on('floating-timer-hide', () => {
+  if (floatingWindow && !floatingWindow.isDestroyed()) {
+    floatingWindow.close();
+    floatingWindow = null;
+  }
+});
+
+ipcMain.on('floating-timer-update', (_event, state) => {
+  if (floatingWindow && !floatingWindow.isDestroyed()) {
+    floatingWindow.webContents.send('floating-timer-state', state);
+  }
+});
+
+ipcMain.on('floating-timer-toggle', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('floating-timer-toggle-request');
+  }
+});
+
+ipcMain.on('floating-timer-close', () => {
+  if (floatingWindow && !floatingWindow.isDestroyed()) {
+    floatingWindow.close();
+    floatingWindow = null;
+  }
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('floating-timer-closed');
+  }
+});

@@ -13,4 +13,28 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getPlatform: () => ipcRenderer.invoke('get-platform'),
   // Detect if we are in Electron
   isElectron: true,
+
+  // Floating timer — called from main window
+  showFloatingTimer: () => ipcRenderer.send('floating-timer-show'),
+  hideFloatingTimer: () => ipcRenderer.send('floating-timer-hide'),
+  updateFloatingTimer: (state) => ipcRenderer.send('floating-timer-update', state),
+  onFloatingTimerToggleRequest: (cb) => {
+    const handler = () => cb();
+    ipcRenderer.on('floating-timer-toggle-request', handler);
+    return () => ipcRenderer.removeListener('floating-timer-toggle-request', handler);
+  },
+  onFloatingTimerClosed: (cb) => {
+    const handler = () => cb();
+    ipcRenderer.on('floating-timer-closed', handler);
+    return () => ipcRenderer.removeListener('floating-timer-closed', handler);
+  },
+
+  // Floating timer — called from the floating window itself
+  onFloatingTimerState: (cb) => {
+    const handler = (_e, state) => cb(state);
+    ipcRenderer.on('floating-timer-state', handler);
+    return () => ipcRenderer.removeListener('floating-timer-state', handler);
+  },
+  floatingTimerToggle: () => ipcRenderer.send('floating-timer-toggle'),
+  floatingTimerClose: () => ipcRenderer.send('floating-timer-close'),
 });

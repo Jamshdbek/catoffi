@@ -9,6 +9,7 @@ export default function Sidebar({
   selectedPresetId,
   activeTimerId,
   onSelectPreset,
+  onOpenServices,
 }) {
   const [showSettings, setShowSettings] = useState(false)
 
@@ -170,7 +171,50 @@ export default function Sidebar({
           })}
         </div>
       </div>}
-      <div style={{ height: 1, background: 'var(--divider)' }} />
+      {/* Services button — pinned to bottom */}
+      <div style={{ marginTop: 'auto' }}>
+        <div style={{ height: 1, background: 'var(--divider)', marginBottom: 12 }} />
+        <p
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            color: 'var(--text-muted)',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            marginBottom: 6,
+          }}
+        >
+          Services
+        </p>
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={onOpenServices}
+          style={{
+            width: '100%',
+            background: 'var(--btn-bg)',
+            border: '1px solid var(--btn-border)',
+            borderRadius: 11,
+            padding: '9px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 9,
+            color: 'var(--text-sub)',
+            fontSize: 13,
+            fontWeight: 500,
+            textAlign: 'left',
+            transition: 'all 0.16s',
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          Manage Services
+        </motion.button>
+      </div>
+
     </motion.div>
+
   )
 }

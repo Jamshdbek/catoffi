@@ -54,19 +54,19 @@ function AppInner() {
   useEffect(() => {
     try {
       localStorage.setItem('focus-timer-timers', JSON.stringify(timers))
-    } catch {}
+    } catch { }
   }, [timers])
 
   useEffect(() => {
     try {
       localStorage.setItem('focus-timer-step-seq', JSON.stringify(stepSteps))
-    } catch {}
+    } catch { }
   }, [stepSteps])
 
   useEffect(() => {
     try {
       localStorage.setItem('focus-timer-stats', JSON.stringify(stats))
-    } catch {}
+    } catch { }
   }, [stats])
 
   // Derive active values (step mode takes priority over regular timer)
@@ -257,119 +257,108 @@ function AppInner() {
 
   return (
     <>
-    <UpdateBanner />
-    <div
-      style={{
-        width: '100%',
-        height: '100vh',
-        background: 'var(--bg)',
-        backgroundImage: bgImage ? 'none' : 'var(--bg-gradient)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-        gap: 18,
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-      className="drag-region"
-    >
-      {bgImage && (
-        <img
-          src={bgImage}
-          alt=""
+      <UpdateBanner />
+      <div
+        style={{
+          width: '100%',
+          height: '100vh',
+          background: bgImage ? 'none' : 'var(--bg)',
+          backgroundImage: bgImage
+            ? `url(${bgImage})`
+            : 'var(--bg-gradient)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 20,
+          gap: 18,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+        className="drag-region"
+      >
+        <div
           style={{
             position: 'absolute',
             inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            objectPosition: 'center',
+            opacity: 0.02,
             pointerEvents: 'none',
-            userSelect: 'none',
+            backgroundSize: 'cover',
+            backgroundImage:
+              'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'2\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
           }}
         />
-      )}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          opacity: 0.02,
-          pointerEvents: 'none',
-          backgroundSize: 'cover',
-          backgroundImage:
-            'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'2\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
-        }}
-      />
 
-      <div className="no-drag" style={{ display: 'flex', alignItems: 'center', gap: 18, flex: 1 }}>
-        <Sidebar
-          selectedPresetId={preset.id}
-          activeTimerId={activeTimer}
-          onSelectPreset={handleSelectPreset}
-          stats={stats}
-          onOpenServices={() => setShowServiceModal(true)}
+        <div className="no-drag" style={{ display: 'flex', alignItems: 'center', gap: 18, flex: 1 }}>
+          <Sidebar
+            selectedPresetId={preset.id}
+            activeTimerId={activeTimer}
+            onSelectPreset={handleSelectPreset}
+            stats={stats}
+            onOpenServices={() => setShowServiceModal(true)}
+          />
+
+          <TimerDisplay
+            title={currentTitle}
+            remaining={timer.remaining}
+            total={timer.duration}
+            running={timer.running}
+            onToggle={timer.toggle}
+            onReset={timer.reset}
+            onSkip={timer.skip}
+            onAdjust={timer.setRemainingManual}
+          />
+
+          <TimerList
+            timers={timers}
+            activeTimerId={activeTimer}
+            remaining={timer.remaining}
+            total={timer.duration}
+            running={timer.running}
+            onSelect={handleSelectTimer}
+            onDelete={handleDeleteTimer}
+            onAdd={() => setShowModal(true)}
+            stepSteps={stepSteps}
+            stepIndex={stepIndex}
+            stepActive={stepActive}
+            stepLoop={stepLoop}
+            onAddStep={() => setShowStepModal(true)}
+            onDeleteStep={handleDeleteStep}
+            onStartSequence={handleStartSequence}
+            onStopSequence={handleStopSequence}
+            onToggleStepLoop={handleToggleStepLoop}
+          />
+        </div>
+
+        <AddTimerModal
+          open={showModal}
+          onAdd={handleAddTimer}
+          onClose={() => setShowModal(false)}
         />
-
-        <TimerDisplay
-          title={currentTitle}
-          remaining={timer.remaining}
-          total={timer.duration}
-          running={timer.running}
-          onToggle={timer.toggle}
-          onReset={timer.reset}
-          onSkip={timer.skip}
-          onAdjust={timer.setRemainingManual}
+        <AddTimerModal
+          open={showStepModal}
+          onAdd={handleAddStep}
+          onClose={() => setShowStepModal(false)}
+          title="New Step"
+          submitLabel="Add Step"
         />
-
-        <TimerList
-          timers={timers}
-          activeTimerId={activeTimer}
-          remaining={timer.remaining}
-          total={timer.duration}
-          running={timer.running}
-          onSelect={handleSelectTimer}
-          onDelete={handleDeleteTimer}
-          onAdd={() => setShowModal(true)}
-          stepSteps={stepSteps}
-          stepIndex={stepIndex}
-          stepActive={stepActive}
-          stepLoop={stepLoop}
-          onAddStep={() => setShowStepModal(true)}
-          onDeleteStep={handleDeleteStep}
-          onStartSequence={handleStartSequence}
-          onStopSequence={handleStopSequence}
-          onToggleStepLoop={handleToggleStepLoop}
+        <ServiceModal
+          open={showServiceModal}
+          onClose={() => setShowServiceModal(false)}
+          notificationsEnabled={notificationsEnabled}
+          onToggleNotifications={() => {
+            setNotificationsEnabled((v) => {
+              const next = !v
+              try { localStorage.setItem('focus-notifications', JSON.stringify(next)) } catch { }
+              return next
+            })
+          }}
+          floatingTimerEnabled={floatingTimerEnabled}
+          onToggleFloatingTimer={() => setFloatingTimerEnabled((v) => !v)}
         />
       </div>
-
-      <AddTimerModal
-        open={showModal}
-        onAdd={handleAddTimer}
-        onClose={() => setShowModal(false)}
-      />
-      <AddTimerModal
-        open={showStepModal}
-        onAdd={handleAddStep}
-        onClose={() => setShowStepModal(false)}
-        title="New Step"
-        submitLabel="Add Step"
-      />
-      <ServiceModal
-        open={showServiceModal}
-        onClose={() => setShowServiceModal(false)}
-        notificationsEnabled={notificationsEnabled}
-        onToggleNotifications={() => {
-          setNotificationsEnabled((v) => {
-            const next = !v
-            try { localStorage.setItem('focus-notifications', JSON.stringify(next)) } catch {}
-            return next
-          })
-        }}
-        floatingTimerEnabled={floatingTimerEnabled}
-        onToggleFloatingTimer={() => setFloatingTimerEnabled((v) => !v)}
-      />
-    </div>
     </>
   )
 }

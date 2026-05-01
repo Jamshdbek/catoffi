@@ -1,6 +1,6 @@
 {
   "name": "cat-offi",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Beautiful Pomodoro & Focus Timer Desktop App built with Electron + Vite + React + Tailwind",
   "main": "electron/main.cjs",
   "author": "Cat Offi",
@@ -15,6 +15,7 @@
     "electron:build": "vite build && electron-builder",
     "electron:build:mac": "vite build && electron-builder --mac",
     "electron:publish:mac": "dotenv -e .env -- bash -c 'GH_TOKEN=$GITHUB_TOKEN vite build && GH_TOKEN=$GITHUB_TOKEN electron-builder --mac --publish always'",
+    "electron:publish:win": "dotenv -e .env -- bash -c 'GH_TOKEN=$GITHUB_TOKEN vite build && GH_TOKEN=$GITHUB_TOKEN electron-builder --win --publish always'",
     "electron:build:win": "vite build && electron-builder --win",
     "electron:build:all": "vite build && electron-builder -mw"
   },
@@ -84,7 +85,14 @@
           ]
         }
       ],
-      "icon": "public/icon.png"
+      "icon": "public/icon.png",
+      "extraFiles": [
+        {
+          "from": "node_modules/electron/dist/ffmpeg.dll",
+          "to": "ffmpeg.dll"
+        }
+      ],
+      "requestedExecutionLevel": "asInvoker"
     },
     "linux": {
       "target": [

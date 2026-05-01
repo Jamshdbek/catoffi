@@ -1,5 +1,6 @@
 # CatOffi
 
+<img src="https://i.ibb.co/FbBTQF9B/2026-04-30-16-58-18.png" alt="404"/>
 **Texnologiyalar:** Electron + Vite + React + Tailwind CSS + Framer Motion
 
 ## ✨ Xususiyatlar

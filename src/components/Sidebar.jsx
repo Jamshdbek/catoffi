@@ -213,7 +213,18 @@ export default function Sidebar({
           Manage Services
         </motion.button>
       </div>
-
+      <p
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            color: 'var(--text-muted)',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            marginBottom: 6,
+          }}
+        >
+          v1.0.6
+        </p>
     </motion.div>
 
   )

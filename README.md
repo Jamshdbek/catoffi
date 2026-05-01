@@ -1,7 +1,8 @@
 # CatOffi
-
-<img src="https://i.ibb.co/FbBTQF9B/2026-04-30-16-58-18.png" alt="404"/>
-**Texnologiyalar:** Electron + Vite + React + Tailwind CSS + Framer Motion
+<div style="display:flex'; justfy-content:'center'">
+<img width="200" style="margin:'auto'" src="https://github.com/Jamshdbek/catoffi/blob/main/public/icon.png" alt="404"/>
+</div>
+**Texnologiyalar:** Electron + Vite + React + Tailwind CSS + Framer Mtion
 
 ## ✨ Xususiyatlar
 

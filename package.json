@@ -1,6 +1,6 @@
 {
   "name": "cat-offi",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "Beautiful Pomodoro & Focus Timer Desktop App built with Electron + Vite + React + Tailwind",
   "main": "electron/main.cjs",
   "author": "Cat Offi",

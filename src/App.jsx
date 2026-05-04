@@ -102,6 +102,7 @@ function AppInner() {
         name: currentTitle,
         type: currentStepObj?.tag ?? activeTimerObj?.tag ?? 'Focus',
         duration: currentDuration,
+        notificationsEnabled,
       })
     } else if (notificationsEnabled) {
       if ('Notification' in window) {

@@ -102,6 +102,7 @@ function createFullscreenNotification(payload) {
     name: payload.name || 'Timer',
     type: payload.type || 'Timer',
     duration: String(payload.duration || 0),
+    notificationsEnabled: String(payload.notificationsEnabled !== false),
   });
 
   if (isDev) {
@@ -119,8 +120,8 @@ function createFullscreenNotification(payload) {
     }
   });
 
-  // Also fire a system notification
-  if (Notification.isSupported()) {
+  // Also fire a system notification (only if notifications are enabled)
+  if (payload.notificationsEnabled !== false && Notification.isSupported()) {
     new Notification({
       title: '⏰ Time is up!',
       body: `${payload.name || 'Your timer'} has finished.`,

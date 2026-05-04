@@ -224,7 +224,7 @@ export default function SettingsPanel({ open }) {
                       letterSpacing: '0.04em',
                     }}
                   >
-                    Almashtirish uchun bosing
+                    Click to change
                   </div>
                 </>
               ) : (
@@ -237,7 +237,7 @@ export default function SettingsPanel({ open }) {
                     padding: '0 8px',
                   }}
                 >
-                  Rasm tanlang yoki shu yerga tashlang
+                  Choose a picture or drop it here
                 </p>
               )}
             </motion.div>
@@ -284,7 +284,7 @@ export default function SettingsPanel({ open }) {
                   cursor: 'pointer',
                 }}
               >
-                Rasmni olib tashlash
+                Remove image
               </motion.button>
             )}
           </div>

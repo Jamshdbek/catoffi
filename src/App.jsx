@@ -6,6 +6,7 @@ import TimerDisplay from './components/TimerDisplay'
 import TimerList from './components/TimerList'
 import AddTimerModal from './components/AddTimerModal'
 import ServiceModal from './components/ServiceModal'
+import TitleBar from './components/TitleBar'
 import { PRESETS, INITIAL_TIMERS } from './utils/constants'
 import { useTimer } from './hooks/useTimer'
 
@@ -27,6 +28,12 @@ function AppInner() {
     try { return JSON.parse(localStorage.getItem('focus-notifications') ?? 'true') } catch { return true }
   })
   const [floatingTimerEnabled, setFloatingTimerEnabled] = useState(false)
+  const [windowHeaderEnabled, setWindowHeaderEnabled] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('focus-window-header') ?? 'true') } catch { return true }
+  })
+
+  const isWindows = window.electronAPI?.platform === 'win32'
+  const showTitleBar = isWindows && windowHeaderEnabled
 
   // Step sequence state
   const [stepSteps, setStepSteps] = useState(() => {
@@ -258,40 +265,58 @@ function AppInner() {
   return (
     <>
       <UpdateBanner />
+      {showTitleBar && <TitleBar />}
       <div
         style={{
           width: '100%',
           height: '100vh',
-          background: bgImage ? 'none' : 'var(--bg)',
-          backgroundImage: bgImage
-            ? `url(${bgImage})`
-            : 'var(--bg-gradient)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          background: 'var(--bg)',
+          backgroundImage: bgImage ? 'none' : 'var(--bg-gradient)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: 20,
+          paddingTop: showTitleBar ? 52 : 20,
+          paddingBottom: 20,
+          paddingLeft: 20,
+          paddingRight: 20,
           gap: 18,
           position: 'relative',
           overflow: 'hidden',
         }}
         className="drag-region"
       >
+        {bgImage && (
+          <img
+            key={bgImage}
+            src={bgImage}
+            alt=""
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+        )}
+
         <div
           style={{
             position: 'absolute',
             inset: 0,
             opacity: 0.02,
             pointerEvents: 'none',
+            zIndex: 1,
             backgroundSize: 'cover',
             backgroundImage:
               'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'2\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
           }}
         />
 
-        <div className="no-drag" style={{ display: 'flex', alignItems: 'center', gap: 18, flex: 1 }}>
+        <div className="no-drag" style={{ display: 'flex', alignItems: 'center', gap: 18, flex: 1, position: 'relative', zIndex: 2 }}>
           <Sidebar
             selectedPresetId={preset.id}
             activeTimerId={activeTimer}
@@ -357,6 +382,14 @@ function AppInner() {
           }}
           floatingTimerEnabled={floatingTimerEnabled}
           onToggleFloatingTimer={() => setFloatingTimerEnabled((v) => !v)}
+          windowHeaderEnabled={windowHeaderEnabled}
+          onToggleWindowHeader={isWindows ? () => {
+            setWindowHeaderEnabled((v) => {
+              const next = !v
+              try { localStorage.setItem('focus-window-header', JSON.stringify(next)) } catch { }
+              return next
+            })
+          } : null}
         />
       </div>
     </>

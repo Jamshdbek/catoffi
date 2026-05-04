@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import CircularTimer from './CircularTimer'
 import { fmt } from '../utils/time'
+import { useTheme } from '../contexts/ThemeContext'
 
 export default function TimerDisplay({
   title,
@@ -14,7 +15,7 @@ export default function TimerDisplay({
 }) {
   const pct = total > 0 ? Math.round((remaining / total) * 100) : 100
   const status = running ? 'Running' : remaining === total ? 'Ready' : (remaining === 0 ? 'Done' : 'Paused')
-  // const { bgImage } = useTheme()
+  const { bgImage } = useTheme()
 
   return (
     <div
@@ -95,7 +96,9 @@ export default function TimerDisplay({
               fontSize: remaining >= 3600 ? 46 : 56,
               fontWeight: 500,
               letterSpacing: '-2px',
-              color: 'var(--text)',
+              color: bgImage ? "#ffff" : 'var(--text)',
+              textShadow: bgImage ? '0 0 8px rgba(255,255,255,0.3)' : 'none',
+              // color: 'var(--panel-bg)',
               lineHeight: 1,
               fontVariantNumeric: 'tabular-nums',
             }}

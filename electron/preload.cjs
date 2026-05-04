@@ -13,6 +13,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getPlatform: () => ipcRenderer.invoke('get-platform'),
   // Detect if we are in Electron
   isElectron: true,
+  // Synchronous platform string ('win32', 'darwin', 'linux')
+  platform: process.platform,
 
   // Floating timer — called from main window
   showFloatingTimer: () => ipcRenderer.send('floating-timer-show'),

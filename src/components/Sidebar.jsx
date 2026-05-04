@@ -171,6 +171,7 @@ export default function Sidebar({
           })}
         </div>
       </div>}
+      
       {/* Services button — pinned to bottom */}
       <div style={{ marginTop: 'auto' }}>
         <div style={{ height: 1, background: 'var(--divider)', marginBottom: 12 }} />

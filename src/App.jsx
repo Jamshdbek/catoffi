@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ThemeProvider, useTheme } from './contexts/ThemeContext'
+import { LanguageProvider, useLanguage } from './contexts/LanguageContext'
 import UpdateBanner from './components/UpdateBanner'
 import Sidebar from './components/Sidebar'
 import TimerDisplay from './components/TimerDisplay'
@@ -12,6 +13,7 @@ import { useTimer } from './hooks/useTimer'
 
 function AppInner() {
   const { bgImage } = useTheme()
+  const { t } = useLanguage()
   const [preset, setPreset] = useState(PRESETS[0])
   const [activeTimer, setActiveTimer] = useState(null)
   const [timers, setTimers] = useState(() => {
@@ -362,13 +364,15 @@ function AppInner() {
           open={showModal}
           onAdd={handleAddTimer}
           onClose={() => setShowModal(false)}
+          title={t('newTimer')}
+          submitLabel={t('addTimer')}
         />
         <AddTimerModal
           open={showStepModal}
           onAdd={handleAddStep}
           onClose={() => setShowStepModal(false)}
-          title="New Step"
-          submitLabel="Add Step"
+          title={t('newStep')}
+          submitLabel={t('addStep')}
         />
         <ServiceModal
           open={showServiceModal}
@@ -400,7 +404,9 @@ function AppInner() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AppInner />
+      <LanguageProvider>
+        <AppInner />
+      </LanguageProvider>
     </ThemeProvider>
   )
 }

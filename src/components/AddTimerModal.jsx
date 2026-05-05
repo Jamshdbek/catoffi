@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { TAGS } from '../utils/constants'
+import { useLanguage } from '../contexts/LanguageContext'
 
-export default function AddTimerModal({ open, onAdd, onClose, title = 'New Timer', submitLabel = 'Add Timer' }) {
+export default function AddTimerModal({ open, onAdd, onClose, title, submitLabel }) {
+  const { t } = useLanguage()
   const [name, setName] = useState('')
   const [digits, setDigits] = useState([0, 0, 0, 0]) // [m1, m2, s1, s2]
   const [tag, setTag] = useState('Work')
@@ -45,11 +47,11 @@ export default function AddTimerModal({ open, onAdd, onClose, title = 'New Timer
 
   function submit() {
     if (!name.trim()) {
-      setErr('Name is required')
+      setErr(t('errNameRequired'))
       return
     }
     if (timeSecs <= 0) {
-      setErr('Enter a valid time')
+      setErr(t('errInvalidTime'))
       return
     }
     onAdd({ id: Date.now(), name: name.trim(), duration: timeSecs, tag })
@@ -158,21 +160,21 @@ export default function AddTimerModal({ open, onAdd, onClose, title = 'New Timer
             </div>
 
             <div>
-              <label style={labelStyle}>Name</label>
+              <label style={labelStyle}>{t('nameLbl')}</label>
               <input
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value)
                   setErr('')
                 }}
-                placeholder="e.g. Deep Reading"
+                placeholder={t('namePlaceholder')}
                 style={inputStyle}
                 autoFocus
               />
             </div>
 
             <div>
-              <label style={labelStyle}>Duration (MM:SS)</label>
+              <label style={labelStyle}>{t('durationLbl')}</label>
               <input
                 readOnly
                 value={timeDisplay}
@@ -189,7 +191,7 @@ export default function AddTimerModal({ open, onAdd, onClose, title = 'New Timer
             </div>
 
             <div>
-              <label style={labelStyle}>Tag</label>
+              <label style={labelStyle}>{t('tagLbl')}</label>
               <select
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
@@ -204,9 +206,9 @@ export default function AddTimerModal({ open, onAdd, onClose, title = 'New Timer
                   paddingRight: 36,
                 }}
               >
-                {TAGS.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
+                {TAGS.map((tag) => (
+                  <option key={tag} value={tag}>
+                    {t('tag_' + tag)}
                   </option>
                 ))}
               </select>

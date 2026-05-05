@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { fmt, fmtShort } from '../utils/time'
+import { useLanguage } from '../contexts/LanguageContext'
 
 export default function TimerList({
   timers,
@@ -20,6 +21,7 @@ export default function TimerList({
   onStopSequence,
   onToggleStepLoop,
 }) {
+  const { t } = useLanguage()
   const pct = total > 0 ? Math.round((remaining / total) * 100) : 100
 
   return (
@@ -59,7 +61,7 @@ export default function TimerList({
             letterSpacing: '-0.2px',
           }}
         >
-          Timers
+          {t('timers')}
         </p>
         <motion.button
           whileTap={{ scale: 0.92 }}
@@ -75,7 +77,7 @@ export default function TimerList({
             justifyContent: 'center',
             color: 'var(--play-color)',
           }}
-          aria-label="Add new timer"
+          aria-label={t('addNewTimer')}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <line x1="12" y1="5" x2="12" y2="19" />
@@ -98,11 +100,11 @@ export default function TimerList({
         }}
       >
         <AnimatePresence>
-          {timers.map((t, idx) => {
-            const isActive = activeTimerId === t.id
+          {timers.map((timer, idx) => {
+            const isActive = activeTimerId === timer.id
             return (
               <motion.div
-                key={t.id}
+                key={timer.id}
                 layout
                 initial={{ opacity: 0, scale: 0.95, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -112,7 +114,7 @@ export default function TimerList({
                   delay: idx < 8 ? idx * 0.03 : 0,
                   layout: { duration: 0.2 },
                 }}
-                onClick={() => onSelect(t)}
+                onClick={() => onSelect(timer)}
                 style={{
                   background: isActive
                     ? 'var(--card-active-bg)'
@@ -147,7 +149,7 @@ export default function TimerList({
                       overflow: 'hidden',
                     }}
                   >
-                    {t.name}
+                    {timer.name}
                   </span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <AnimatePresence>
@@ -179,7 +181,7 @@ export default function TimerList({
                               background: '#ef4444',
                             }}
                           />
-                          LIVE
+                          {t('live')}
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -188,7 +190,7 @@ export default function TimerList({
                       whileTap={{ scale: 0.9 }}
                       onClick={(e) => {
                         e.stopPropagation()
-                        onDelete(t.id)
+                        onDelete(timer.id)
                       }}
                       style={{
                         background: 'transparent',
@@ -227,7 +229,7 @@ export default function TimerList({
                       padding: '2px 7px',
                     }}
                   >
-                    {t.tag}
+                    {t('tag_' + timer.tag)}
                   </span>
                   <span
                     style={{
@@ -236,7 +238,7 @@ export default function TimerList({
                       color: 'var(--text-sub)',
                     }}
                   >
-                    {isActive ? fmt(remaining) : fmtShort(t.duration)}
+                    {isActive ? fmt(remaining) : fmtShort(timer.duration)}
                   </span>
                 </div>
                 <div
@@ -283,14 +285,14 @@ export default function TimerList({
               letterSpacing: '-0.15px',
             }}
           >
-            Step Sequence
+            {t('stepSequence')}
           </p>
           <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
             {/* Loop toggle */}
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={onToggleStepLoop}
-              title={stepLoop ? 'Loop: on' : 'Loop: off'}
+              title={stepLoop ? t('loopOn') : t('loopOff')}
               style={{
                 background: stepLoop ? 'var(--play-bg)' : 'transparent',
                 border: `1px solid ${stepLoop ? 'transparent' : 'var(--card-border)'}`,
@@ -339,14 +341,14 @@ export default function TimerList({
                   <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                   </svg>
-                  Stop
+                  {t('stop')}
                 </>
               ) : (
                 <>
                   <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
-                  Start
+                  {t('start')}
                 </>
               )}
             </motion.button>
@@ -357,7 +359,7 @@ export default function TimerList({
         {stepSteps.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
             <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-              No steps yet. Add one below.
+              {t('noStepsYet')}
             </p>
           </div>
         ) : (
@@ -526,7 +528,7 @@ export default function TimerList({
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
-        Add Step
+        {t('addStepBtn')}
       </motion.button>
 
       <div

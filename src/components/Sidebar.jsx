@@ -4,7 +4,9 @@ import { PRESETS } from '../utils/constants'
 import { fmtShort } from '../utils/time'
 import ThemeToggle from './ThemeToggle'
 import SettingsPanel from './SettingsPanel'
+import { useLanguage } from '../contexts/LanguageContext'
 import logo from "../../public/logo.png"
+
 export default function Sidebar({
   selectedPresetId,
   activeTimerId,
@@ -12,6 +14,7 @@ export default function Sidebar({
   onOpenServices,
 }) {
   const [showSettings, setShowSettings] = useState(false)
+  const { t } = useLanguage()
 
   return (
     <motion.div
@@ -100,77 +103,81 @@ export default function Sidebar({
       <SettingsPanel open={showSettings} />
 
       <div style={{ height: 1, background: 'var(--divider)' }} />
+
       {/* Mode selector */}
-     {!showSettings && <div>
-        <p
-          style={{
-            fontSize: 10,
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            marginBottom: 8,
-          }}
-        >
-          Mode
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {PRESETS.map((p) => {
-            const active = selectedPresetId === p.id && !activeTimerId
-            return (
-              <motion.button
-                key={p.id}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => onSelectPreset(p)}
-                style={{
-                  background: active
-                    ? 'var(--card-active-bg)'
-                    : 'transparent',
-                  border: `1px solid ${active ? 'var(--card-active-border)' : 'transparent'
-                    }`,
-                  borderRadius: 11,
-                  padding: '10px 12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 9,
-                  color: active ? 'var(--text)' : 'var(--text-sub)',
-                  fontSize: 13,
-                  fontWeight: active ? 600 : 400,
-                  textAlign: 'left',
-                  transition: 'all 0.16s',
-                  width: '100%',
-                }}
-              >
-                <motion.span
-                  animate={{
-                    scale: active ? 1 : 0.8,
+      {!showSettings && (
+        <div>
+          <p
+            style={{
+              fontSize: 10,
+              fontWeight: 600,
+              color: 'var(--text-muted)',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              marginBottom: 8,
+            }}
+          >
+            {t('mode')}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {PRESETS.map((p) => {
+              const active = selectedPresetId === p.id && !activeTimerId
+              return (
+                <motion.button
+                  key={p.id}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => onSelectPreset(p)}
+                  style={{
                     background: active
-                      ? 'var(--text)'
-                      : 'var(--progress-bg)',
-                  }}
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                  }}
-                />
-                {p.label}
-                <span
-                  style={{
-                    marginLeft: 'auto',
-                    fontSize: 10.5,
-                    color: 'var(--text-muted)',
-                    fontFamily: 'DM Mono, monospace',
+                      ? 'var(--card-active-bg)'
+                      : 'transparent',
+                    border: `1px solid ${active ? 'var(--card-active-border)' : 'transparent'
+                      }`,
+                    borderRadius: 11,
+                    padding: '10px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 9,
+                    color: active ? 'var(--text)' : 'var(--text-sub)',
+                    fontSize: 13,
+                    fontWeight: active ? 600 : 400,
+                    textAlign: 'left',
+                    transition: 'all 0.16s',
+                    width: '100%',
                   }}
                 >
-                  {fmtShort(p.duration)}
-                </span>
-              </motion.button>
-            )
-          })}
+                  <motion.span
+                    animate={{
+                      scale: active ? 1 : 0.8,
+                      background: active
+                        ? 'var(--text)'
+                        : 'var(--progress-bg)',
+                    }}
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      flexShrink: 0,
+                    }}
+                  />
+                  {t('preset' + p.id)}
+                  <span
+                    style={{
+                      marginLeft: 'auto',
+                      fontSize: 10.5,
+                      color: 'var(--text-muted)',
+                      fontFamily: 'DM Mono, monospace',
+                    }}
+                  >
+                    {fmtShort(p.duration)}
+                  </span>
+                </motion.button>
+              )
+            })}
+          </div>
         </div>
-      </div>}
+      )}
+
       {/* Services button — pinned to bottom */}
       <div style={{ marginTop: 'auto' }}>
         <div style={{ height: 1, background: 'var(--divider)', marginBottom: 12 }} />
@@ -184,7 +191,7 @@ export default function Sidebar({
             marginBottom: 6,
           }}
         >
-          Services
+          {t('services')}
         </p>
         <motion.button
           whileTap={{ scale: 0.97 }}
@@ -206,14 +213,14 @@ export default function Sidebar({
           }}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            <path d="M2 17l10 5 10-5"/>
-            <path d="M2 12l10 5 10-5"/>
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
           </svg>
-          Manage Services
+          {t('manageServices')}
         </motion.button>
+
       </div>
     </motion.div>
-
   )
 }

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../contexts/ThemeContext'
+import { useLanguage } from '../contexts/LanguageContext'
 import { THEMES } from '../utils/constants'
 
 const MIN_W = 400
@@ -11,6 +12,7 @@ const MAX_BYTES = 5 * 1024 * 1024 // 5 MB
 
 export default function SettingsPanel({ open }) {
   const { theme, setTheme, bgImage, setBgImage } = useTheme()
+  const { t } = useLanguage()
   const inputRef = useRef(null)
   const [error, setError] = useState(null)
   const [dragging, setDragging] = useState(false)
@@ -20,11 +22,11 @@ export default function SettingsPanel({ open }) {
 
     if (!file) return
     if (!file.type.startsWith('image/')) {
-      setError('Faqat rasm fayllari qabul qilinadi.')
+      setError(t('errOnlyImages'))
       return
     }
     if (file.size > MAX_BYTES) {
-      setError(`Fayl hajmi 5 MB dan oshmasligi kerak (hozir: ${(file.size / 1024 / 1024).toFixed(1)} MB).`)
+      setError(t('errMaxSize', { size: (file.size / 1024 / 1024).toFixed(1) }))
       return
     }
 
@@ -34,16 +36,16 @@ export default function SettingsPanel({ open }) {
       const img = new Image()
       img.onload = () => {
         if (img.width < MIN_W || img.height < MIN_H) {
-          setError(`Rasm o'lchami kamida ${MIN_W}×${MIN_H} px bo'lishi kerak (hozir: ${img.width}×${img.height}).`)
+          setError(t('errMinDimensions', { minW: MIN_W, minH: MIN_H, w: img.width, h: img.height }))
           return
         }
         if (img.width > MAX_W || img.height > MAX_H) {
-          setError(`Rasm o'lchami ${MAX_W}×${MAX_H} px dan oshmasligi kerak (hozir: ${img.width}×${img.height}).`)
+          setError(t('errMaxDimensions', { maxW: MAX_W, maxH: MAX_H, w: img.width, h: img.height }))
           return
         }
         setBgImage(dataUrl)
       }
-      img.onerror = () => setError('Rasm o\'qib bo\'lmadi.')
+      img.onerror = () => setError(t('errCannotRead'))
       img.src = dataUrl
     }
     reader.readAsDataURL(file)
@@ -88,7 +90,7 @@ export default function SettingsPanel({ open }) {
                 textTransform: 'uppercase',
               }}
             >
-              Theme
+              {t('theme')}
             </p>
 
             <div
@@ -98,19 +100,19 @@ export default function SettingsPanel({ open }) {
                 gap: 8,
               }}
             >
-              {THEMES.map((t) => {
-                const active = theme === t.id
+              {THEMES.map((th) => {
+                const active = theme === th.id
                 return (
                   <motion.button
-                    key={t.id}
-                    onClick={() => setTheme(t.id)}
-                    title={t.label}
+                    key={th.id}
+                    onClick={() => setTheme(th.id)}
+                    title={th.label}
                     whileHover={{ scale: 1.06 }}
                     whileTap={{ scale: 0.95 }}
                     style={{
                       aspectRatio: '1',
                       borderRadius: 10,
-                      background: t.preview,
+                      background: th.preview,
                       border: active
                         ? `2px solid var(--text)`
                         : `1px solid var(--card-border)`,
@@ -129,8 +131,8 @@ export default function SettingsPanel({ open }) {
                         width: 14,
                         height: 14,
                         borderRadius: '50%',
-                        background: t.accent,
-                        boxShadow: active ? `0 0 14px ${t.accent}` : 'none',
+                        background: th.accent,
+                        boxShadow: active ? `0 0 14px ${th.accent}` : 'none',
                       }}
                     />
                   </motion.button>
@@ -145,7 +147,7 @@ export default function SettingsPanel({ open }) {
                 lineHeight: 1.5,
               }}
             >
-              {THEMES.find((t) => t.id === theme)?.label}
+              {THEMES.find((th) => th.id === theme)?.label}
             </p>
 
             {/* ── Divider ── */}
@@ -161,7 +163,7 @@ export default function SettingsPanel({ open }) {
                 textTransform: 'uppercase',
               }}
             >
-              Background Image
+              {t('backgroundImage')}
             </p>
 
             <input
@@ -224,7 +226,7 @@ export default function SettingsPanel({ open }) {
                       letterSpacing: '0.04em',
                     }}
                   >
-                    Click to change
+                    {t('clickToChange')}
                   </div>
                 </>
               ) : (
@@ -237,15 +239,14 @@ export default function SettingsPanel({ open }) {
                     padding: '0 8px',
                   }}
                 >
-                  Choose a picture or drop it here
+                  {t('dropZoneHint')}
                 </p>
               )}
             </motion.div>
 
             {/* Limits hint */}
             <p style={{ fontSize: 9.5, color: 'var(--text-muted)', lineHeight: 1.5 }}>
-              {MIN_W}×{MIN_H} — {MAX_W}×{MAX_H} px &nbsp;·&nbsp; maks 5 MB
-              &nbsp;·&nbsp; JPG / PNG / WebP
+              {t('sizeHint', { minW: MIN_W, minH: MIN_H, maxW: MAX_W, maxH: MAX_H })}
             </p>
 
             {/* Error */}
@@ -284,7 +285,7 @@ export default function SettingsPanel({ open }) {
                   cursor: 'pointer',
                 }}
               >
-                Remove image
+                {t('removeImage')}
               </motion.button>
             )}
           </div>

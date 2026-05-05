@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLanguage } from '../contexts/LanguageContext'
 
 function Toggle({ enabled, onToggle }) {
   return (
@@ -66,6 +67,8 @@ export default function ServiceModal({
   windowHeaderEnabled,
   onToggleWindowHeader,
 }) {
+  const { t, lang, setLang, LANGUAGES } = useLanguage()
+
   return (
     <AnimatePresence>
       {open && (
@@ -127,7 +130,7 @@ export default function ServiceModal({
                     <path d="M2 12l10 5 10-5" />
                   </svg>
                 </div>
-                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Services</p>
+                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{t('servicesTitle')}</p>
               </div>
               <motion.button
                 whileTap={{ scale: 0.9 }}
@@ -156,8 +159,8 @@ export default function ServiceModal({
                   <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                 </svg>
               }
-              label="Notifications"
-              desc="Timer completion alerts"
+              label={t('notifications')}
+              desc={t('notificationsDesc')}
               enabled={notificationsEnabled}
               onToggle={onToggleNotifications}
             />
@@ -171,8 +174,8 @@ export default function ServiceModal({
                   <path d="M12 8v4l2.5 2.5" />
                 </svg>
               }
-              label="Floating Timer"
-              desc="Draggable mini timer overlay"
+              label={t('floatingTimer')}
+              desc={t('floatingTimerDesc')}
               enabled={floatingTimerEnabled}
               onToggle={onToggleFloatingTimer}
             />
@@ -190,25 +193,60 @@ export default function ServiceModal({
                       <circle cx="13" cy="6.5" r="0.8" fill="currentColor" />
                     </svg>
                   }
-                  label="Window Header"
-                  desc="Title bar with window controls"
+                  label={t('windowHeader')}
+                  desc={t('windowHeaderDesc')}
                   enabled={windowHeaderEnabled}
                   onToggle={onToggleWindowHeader}
                 />
               </>
             )}
 
-            <p
-            style={{
+            <div style={{ height: 1, background: 'var(--divider)', margin: '8px 0 10px' }} />
+
+            <p style={{
               fontSize: 10,
               fontWeight: 600,
               color: 'var(--text-muted)',
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
-            }}
-          >
-            v1.0.7
-          </p>
+              marginBottom: 8,
+            }}>
+              {t('language')}
+            </p>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {LANGUAGES.map((l) => (
+                <motion.button
+                  key={l.code}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setLang(l.code)}
+                  style={{
+                    flex: 1,
+                    padding: '7px 0',
+                    borderRadius: 8,
+                    border: `1px solid ${lang === l.code ? 'var(--card-active-border)' : 'var(--btn-border)'}`,
+                    background: lang === l.code ? 'var(--card-active-bg)' : 'transparent',
+                    color: lang === l.code ? 'var(--text)' : 'var(--text-muted)',
+                    fontSize: 11,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.16s',
+                  }}
+                >
+                  {l.label}
+                </motion.button>
+              ))}
+            </div>
+
+            <p style={{
+              fontSize: 10,
+              fontWeight: 600,
+              color: 'var(--text-muted)',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              marginTop: 12,
+            }}>
+              v1.0.7
+            </p>
           </motion.div>
         </motion.div>
       )}
